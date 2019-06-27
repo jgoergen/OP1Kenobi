@@ -34,7 +34,13 @@ The actual application code is all written in Python 2.x using Pygame as the cor
 
 
 ## Current Features
-4 buttons + d pad controls, color screen, 3 extra USB ports + directly soldered down USB Soundcard.
+4 buttons + d pad controls
+
+Color screen
+
+3 extra USB ports
+
+Permanent USB Soundcard
 
 A sound librarian ( wav and mp3 playback ) for building new drum kits and loading ( recording ) them or loading ( recording ) sampler synth sounds
 
