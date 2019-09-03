@@ -1,4 +1,4 @@
-# Op1Bro!
+# OP1Kenobi
 A full featured Companion for the Teenage Engineering OP1 Keyboard.
 
 While I adore my OP1, there are some things I would love to augment a bit to improve the workflow, plus more features = more better. 
