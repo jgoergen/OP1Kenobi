@@ -52,12 +52,12 @@ class MainMenu():
                 from Scenes.Tapes import *
                 self.core.ChangeScene(Tapes)
             elif (self.currentIndex == 4):
-                from Scenes.Albums import *
-                self.core.ChangeScene(Albums)
+                from Scenes.Backups import *
+                self.core.ChangeScene(Backups)
             elif (self.currentIndex == 5):
                 pass
             elif (self.currentIndex == 6):
-                self.core.Quit()
+                self.core.RunCommand("sudo shutdown -h now")
 
     def Draw(self):
         indexColor = (100, self.g, 100)
@@ -85,7 +85,7 @@ class MainMenu():
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 4 else Config.PrimaryTextColor, 
             (38, 74), 
-            'Albums')
+            'Backups')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 5 else Config.PrimaryTextColor, 
@@ -95,5 +95,5 @@ class MainMenu():
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 6 else Config.PrimaryTextColor, 
             (49, 110), 
-            'Quit')
+            'Shutdown')
     

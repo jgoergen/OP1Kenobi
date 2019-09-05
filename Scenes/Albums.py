@@ -98,12 +98,14 @@ class Albums():
 
                 elif kl:
                     self.cursorPosition -= 1
+
                 elif kr:
                     self.cursorPosition += 1
 
                 # cursor wrapping
                 if (self.cursorPosition < 0):
                     self.cursorPosition = Config.MaxFilenameLength
+
                 elif (self.cursorPosition > Config.MaxFilenameLength):
                     self.cursorPosition = 0
                     
@@ -159,16 +161,20 @@ class Albums():
             elif self.menu == 0:
                 if ku:
                     self.currentIndex -= 1
+
                 elif kd:
                     self.currentIndex += 1
+
                 elif kl:
                     pass
+
                 elif kr:
                     pass
 
                 # cursor wrapping
                 if (self.currentIndex < 0):
                     self.currentIndex = (len(self.currentDirectories) + len(self.currentFiles)) - 1
+
                 elif (self.currentIndex > (len(self.currentDirectories) + len(self.currentFiles))):
                     self.currentIndex = 0
 
@@ -202,6 +208,7 @@ class Albums():
                         self.core.UnmountDevice(Config.OP1USBMountDir)
                         from Scenes.MainMenu import *
                         self.core.ChangeScene(MainMenu)
+                        
                     else:
                         self.lastDirectories.pop()
                         self.loadDirectoryData(self.lastDirectories[-1])

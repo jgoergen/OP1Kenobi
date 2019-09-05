@@ -100,25 +100,57 @@ class Core():
     def DeleteFile(self, sourcePath):
         os.remove(sourcePath)
 
-    def CopyFolder(self, sourcePath, destinationPath, symlinks=False, ignore=None):
-        ct=0
-        # print str(len(os.listdir(src))) + " files to move"
+    def DeleteFolder(self, sourcePath):
+        print("Core:: Deleting directory")
+        print(sourcePath);
+        if os.path.exists(sourcePath):
+            sh.rmtree(sourcePath)
+        else:
+            print("Core:: Directory doesnt exist, ignoring.")
 
-        try:
-            for item in os.listdir(sourcePath):
-                s = os.path.join(sourcePath, item)
-                d = os.path.join(destinationPath, item)
+    def getNormPath(self, path):
+        return os.path.basename(os.path.normpath(path))
 
-                if os.path.isdir(destinationPath) == 0:
-                    os.mkdir(destinationPath)
-                if os.path.isdir(s):
-                    sh.copytree(s, d, symlinks, ignore)
-                else:
-                    sh.copy(s, d)
-                    ct += 1
-                    print "Core:: File " + str(ct) + " moved"
-        except:
-            print "Core:: Must be an error. file full or smt"
+    def CopyFolder(self, src, dst, symlinks = False, ignore = None):
+        print("Core:: Copying " + src + " to " + dst);
+
+        if not os.path.exists(dst):
+            print("Core:: Creating destination directory.")
+            os.makedirs(dst)
+            sh.copystat(src, dst)
+
+        lst = os.listdir(src)
+        
+        if ignore:
+            excl = ignore(src, lst)
+            lst = [x for x in lst if x not in excl]
+
+        for item in lst:
+            s = os.path.join(src, item)
+            d = os.path.join(dst, item)
+
+            if symlinks and os.path.islink(s):
+                if os.path.lexists(d):
+                    os.remove(d)
+                
+                print("Core:: Creating Symlink")
+                os.symlink(os.readlink(s), d)
+
+                try:
+                    st = os.lstat(s)
+                    mode = stat.S_IMODE(st.st_mode)
+                    os.lchmod(d, mode)
+
+                except:
+                    print("Core:: lchmod not available")
+                    pass
+
+            elif os.path.isdir(s):
+                self.CopyFolder(s, d, symlinks, ignore)
+
+            else:
+                print("Core:: Copying file " + d);
+                sh.copy2(s, d)
 
     def GetDataInDirectory(self, path):
         print 'Core:: Loading directory information for ' + path

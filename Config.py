@@ -22,6 +22,8 @@ class Config:
     OP1USBMountDir = '/media/op1'
     OP1USBId = '*Teenage_OP-1*'
     MediaDirectory = './Media'
+    BackupDirectory = 'backups'
+    BackupContext = 'default'
 
     PrimaryTextColor = (255, 255, 255)
     ErrorTextColor = (255, 0, 0)
