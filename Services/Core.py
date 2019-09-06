@@ -53,6 +53,12 @@ class Core():
             stdout = PIPE)
         return p.communicate()[0]
 
+    def Shutdown(self):
+        self.RunCommand("sudo shutdown -h now")
+
+    def Reboot(self):
+        self.RunCommand("sudo reboot")
+
     def IsUSBDeviceConnected(self, vendor, product):
       return usb.core.find(
           idVendor = vendor, 

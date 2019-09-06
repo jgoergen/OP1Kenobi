@@ -43,21 +43,20 @@ class MainMenu():
                 from Scenes.Samples import *
                 self.core.ChangeScene(Samples)
             elif (self.currentIndex == 1):
-                from Scenes.Synths import *
-                self.core.ChangeScene(Synths)
-            elif (self.currentIndex == 2):
-                from Scenes.Drums import *
-                self.core.ChangeScene(Drums)
-            elif (self.currentIndex == 3):
-                from Scenes.Tapes import *
-                self.core.ChangeScene(Tapes)
-            elif (self.currentIndex == 4):
                 from Scenes.Backups import *
                 self.core.ChangeScene(Backups)
+            elif (self.currentIndex == 2):
+                from Scenes.Synths import *
+                self.core.ChangeScene(Synths)
+            elif (self.currentIndex == 3):
+                from Scenes.Drums import *
+                self.core.ChangeScene(Drums)
+            elif (self.currentIndex == 4):
+                self.core.Shutdown()
             elif (self.currentIndex == 5):
                 pass
             elif (self.currentIndex == 6):
-                self.core.RunCommand("sudo shutdown -h now")
+                pass
 
     def Draw(self):
         indexColor = (100, self.g, 100)
@@ -69,31 +68,31 @@ class MainMenu():
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 1 else Config.PrimaryTextColor, 
-            (40, 20), 
-            'Synths')
+            (35, 20), 
+            'Backups')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 2 else Config.PrimaryTextColor, 
-            (41, 38), 
-            'Drums')
+            (31, 38), 
+            'Mng Synths')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 3 else Config.PrimaryTextColor, 
-            (45, 56), 
-            'Tapes')
+            (30, 56), 
+            'Mng Drums')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 4 else Config.PrimaryTextColor, 
-            (38, 74), 
-            'Backups')
+            (26, 74), 
+            'Shutdown')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 5 else Config.PrimaryTextColor, 
             (50, 92), 
-            'Midi')
+            '')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 6 else Config.PrimaryTextColor, 
-            (49, 110), 
-            'Shutdown')
+            (26, 110), 
+            '')
     

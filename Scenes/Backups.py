@@ -16,6 +16,8 @@ class Backups():
         self.currentDirectories = directories
         self.currentFiles = []
         self.currentIndex = 0
+        self.contextPosition = 0;
+        self.backupSelection = 0;
     
         for file in files:
             if ".aif" in file.lower():
@@ -119,19 +121,25 @@ class Backups():
                     if (self.currentIndex == 0):
                         self.menu = 1
                     elif (self.currentIndex == 1):
+                        # backup all
+                        self.backupSelection = 0;
                         self.menu = 2
                     elif (self.currentIndex == 2):
-                        from Scenes.Synths import *
-                        self.core.ChangeScene(Synths)
+                        # backup synths
+                        self.backupSelection = 1
+                        self.menu = 2
                     elif (self.currentIndex == 3):
-                        from Scenes.Drums import *
-                        self.core.ChangeScene(Drums)
+                        # backup drums
+                        self.backupSelection = 2
+                        self.menu = 2
                     elif (self.currentIndex == 4):
-                        from Scenes.Tapes import *
-                        self.core.ChangeScene(Tapes)
+                        # backup tapes
+                        self.backupSelection = 3
+                        self.menu = 2
                     elif (self.currentIndex == 5):
-                        from Scenes.Albums import *
-                        self.core.ChangeScene(Albums)
+                        # backup albums
+                        self.backupSelection = 4
+                        self.menu = 2
 
                 if k2:
                     pass
@@ -205,28 +213,45 @@ class Backups():
             elif self.menu == 2:
                 if k1:
                     # copy all local
+                    self.video.FillScreen(Colors.Black)
                     self.video.DrawLargeText(
                         Config.PrimaryTextColor, 
-                        (10, 10), 
+                        (30, 50), 
                         "Copying!")
 
                     self.video.Update()
 
                     if self.local:
-                        print("Backups:: Restoring Local System to OP1")
                         sourceDirectory = Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext + "/"
                         destinationDirectory = Config.OP1USBMountDir + "/"
                     else:
-                        print("Backups:: Backing up OP1 to Local System")
                         sourceDirectory = Config.OP1USBMountDir + "/"
                         destinationDirectory = Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext + "/"
 
-                    # clear out current synths and drums
-                    self.core.DeleteFolder(destinationDirectory + "synth")
-                    self.core.DeleteFolder(destinationDirectory + "drum")
+                    if (self.backupSelection == 0):
+                        self.core.DeleteFolder(destinationDirectory + "synth")
+                        self.core.DeleteFolder(destinationDirectory + "drum")
+
+                    elif (self.backupSelection == 1):
+                        self.core.DeleteFolder(destinationDirectory + "synth")
+                        sourceDirectory += "/synth/"
+                        destinationDirectory += "/synth/"
+                    
+                    elif (self.backupSelection == 2):
+                        self.core.DeleteFolder(destinationDirectory + "drum")
+                        sourceDirectory += "/drum/"
+                        destinationDirectory += "/drum/"
+
+                    elif (self.backupSelection == 3):
+                        sourceDirectory += "/tape/"
+                        destinationDirectory += "/tape/"
+
+                    elif (self.backupSelection == 4):
+                        sourceDirectory += "/album/"
+                        destinationDirectory += "/album/"
                         
                     # copy
-                    print("All:: Copying all directories from")
+                    print("All:: Copying data from")
                     print(sourceDirectory)
                     print("to")
                     print(destinationDirectory)
@@ -256,13 +281,13 @@ class Backups():
                 # main backups menu
                 self.video.DrawSmallText(
                     Config.PrimaryTextColor,
-                    (2, 2),
-                    'Context > ' + Config.BackupContext)
+                    (4, 4),
+                    'Folder > ' + Config.BackupContext)
 
                 self.video.DrawLargeText(
                     indexColor if self.currentIndex == 0 else Config.PrimaryTextColor, 
-                    (10, 20), 
-                    'New Context')
+                    (12, 20), 
+                    'New Folder')
                     
                 self.video.DrawLargeText(
                     indexColor if self.currentIndex == 1 else Config.PrimaryTextColor, 
@@ -271,22 +296,22 @@ class Backups():
 
                 self.video.DrawLargeText(
                     indexColor if self.currentIndex == 2 else Config.PrimaryTextColor, 
-                    (40, 56), 
+                    (35, 56), 
                     'Synths')
 
                 self.video.DrawLargeText(
                     indexColor if self.currentIndex == 3 else Config.PrimaryTextColor, 
-                    (40, 74), 
+                    (35, 74), 
                     'Drums')
 
                 self.video.DrawLargeText(
                     indexColor if self.currentIndex == 4 else Config.PrimaryTextColor, 
-                    (47, 92), 
+                    (40, 92), 
                     'Tapes')
 
                 self.video.DrawLargeText(
                     indexColor if self.currentIndex == 5 else Config.PrimaryTextColor, 
-                    (40, 110), 
+                    (35, 110), 
                     'Albums')
 
             elif self.menu == 1:
@@ -294,7 +319,7 @@ class Backups():
                 self.video.DrawSmallText(
                     indexColor, 
                     (10, 10), 
-                    "Create new Context")
+                    "Create new Folder")
 
                 phraseList = list(Config.BackupContext)
                 newPhraseList = []
@@ -328,7 +353,7 @@ class Backups():
                 self.video.DrawLargeText(
                         Config.PrimaryTextColor, 
                         (35, 38), 
-                        "Context")
+                        "Folder")
 
                 self.video.DrawLargeText(
                         Config.PrimaryTextColor, 
