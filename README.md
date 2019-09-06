@@ -12,13 +12,13 @@ Coming Soon...
 | ------------- |:-------------:
 | 80% | Setup hardware |
 | Done! | Setup Linux environment |
-| 70% | Complete v1.0, MVP features |
-| Done! | Put together github for everything. |
+| 90% | Complete v1.0, MVP features |
+| 90% | Put together github for everything. |
 | 0% | Put together tutorial video on initial build, initial code, key learnings and demonstration. |
 | 0% | Complete V2.0, Expand feature set to less essential features |
 | 0% | 3d printable case |
 
-The linux distro is typical raspbian lite, upon booting it automatically runs the python script. The usb soundcard has been soldered directly to one of the usb ports on the usb hub and set as the default for the os and the controls + display auto start on boot as well. You'll notice that I used a Raspberry Pi Zero instead of a Zero W. This was because I wanted to be able to omit the wifi adapter when I didn't need wifi ( easier on the battery, primarily. ) You could totally sub in a Zero W instead and have wireless connectivity all the time.
+The linux distro is typical raspbian lite. Upon booting it automatically runs the python script. The usb soundcard has been soldered directly to one of the usb ports on the usb hub and set as the default for the os and the controls + display auto start on boot as well. You'll notice that I used a Raspberry Pi Zero instead of a Zero W. This was because I wanted to be able to omit the wifi adapter when I didn't need wifi ( easier on the battery, primarily. ) You could totally sub in a Zero W instead and have wireless connectivity all the time.
 
 The hardware consists of:
 1. A Raspberry Pi Zero [Amazon Link](https://www.amazon.com/Raspberry-Zero-v1-3-Development-Board/dp/B01L3IU6XS/ref=sr_1_10?keywords=raspberry+pi+zero&qid=1561653799&s=gateway&sr=8-10)
@@ -32,11 +32,10 @@ The hardware consists of:
 
 The actual application code is all written in Python 2.x using Pygame as the core.
 
-
 ## Current Features
 4 buttons + d pad controls
 
-Color screen
+Color oled screen
 
 3 extra USB ports
 
@@ -44,13 +43,11 @@ Permanent USB Soundcard
 
 A sound librarian ( wav and mp3 playback ) for building new drum kits and loading ( recording ) them or loading ( recording ) sampler synth sounds
 
-A patch librarian for copying synth and drumkit patches to / from the OP1
+A patch librarian for copying synth and drumkit patches to / from the OP1 with renaming ability
 
-A tape track librarian for copying synth and drumkit patches to / from the OP1
+A complete backup / restore system supporting as many different 'snapshots' as you can store.
 
-An album librarian for copying synth and drumkit patches to / from the OP1
-
-Auto routing any USB MIDI devices to the OP1
+Auto routing any other USB MIDI devices to the OP1
 
 SAMBA file sharing over Wifi
 
@@ -58,8 +55,6 @@ Auto starting the Python app on boot
 
 
 ## Features I want figured out for V1.0
-
-Backup / restore of entire OP1 'state' so you can easily backup and swap entire states for song writing
 
 A more complete file editor system ( create folders, rename things, multi select, etc. )
 
