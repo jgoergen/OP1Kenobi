@@ -9,6 +9,7 @@ from Services.Audio import *
 from Services.Video import *
 from Services.Core import *
 from Services.Input import *
+from Services.PhraseInput import *
 
 class Backups():
     def loadDirectoryData(self, path):
@@ -16,8 +17,8 @@ class Backups():
         self.currentDirectories = directories
         self.currentFiles = []
         self.currentIndex = 0
-        self.contextPosition = 0;
-        self.backupSelection = 0;
+        self.contextPosition = 0
+        self.backupSelection = 0
     
         for file in files:
             if ".aif" in file.lower():
@@ -48,11 +49,10 @@ class Backups():
         self.local = False
         self.menu = 0
         self.cursorPosition = 0
-        self.contextPosition = 0
-        self.currentFileName = ""
         self.g = 0
         self.currentIndex = 0
         self.volume = self.audio.GetVolume()
+        self.phraseInput = PhraseInput()
         self.op1Present = self.core.IsUSBDeviceConnected(Config.OP1USBVendor, Config.OP1USBProduct)
         
         if self.op1Present:
@@ -74,6 +74,73 @@ class Backups():
         if (self.g > 255):
             self.g = 0
 
+    def CopyFiles(self):
+        self.video.FillScreen(Colors.Black)
+        self.video.DrawLargeText(
+            Config.PrimaryTextColor, 
+            (30, 50), 
+            "Copying!")
+
+        self.video.Update()
+
+        if self.local:
+            sourceDirectory = Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext + "/"
+            destinationDirectory = Config.OP1USBMountDir + "/"
+        else:
+            sourceDirectory = Config.OP1USBMountDir + "/"
+            destinationDirectory = Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext + "/"
+
+        if (self.backupSelection == 0):
+            self.core.DeleteFolder(destinationDirectory + "synth")
+            self.core.DeleteFolder(destinationDirectory + "drum")
+
+        elif (self.backupSelection == 1):
+            self.core.DeleteFolder(destinationDirectory + "synth")
+            sourceDirectory += "/synth/"
+            destinationDirectory += "/synth/"
+        
+        elif (self.backupSelection == 2):
+            self.core.DeleteFolder(destinationDirectory + "drum")
+            sourceDirectory += "/drum/"
+            destinationDirectory += "/drum/"
+
+        elif (self.backupSelection == 3):
+            sourceDirectory += "/tape/"
+            destinationDirectory += "/tape/"
+
+        elif (self.backupSelection == 4):
+            sourceDirectory += "/album/"
+            destinationDirectory += "/album/"
+            
+        # copy
+        print("All:: Copying data from")
+        print(sourceDirectory)
+        print("to")
+        print(destinationDirectory)
+        self.core.CopyFolder(sourceDirectory, destinationDirectory)
+        self.menu = 0
+
+    def SwitchContext(self):
+        if self.local == True:
+            self.local = False
+        else:
+            self.local = True
+
+    def CreateNewDirectory(self):
+        # create new backup directory
+        self.core.ForceDirectory(Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext)
+        
+        # reload backup directories
+        self.loadDirectoryData(Config.MediaDirectory + "/" + Config.BackupDirectory + "/")
+        
+        # select new backup directory
+        for index, directory in enumerate(self.currentDirectories):
+            if self.core.getNormPath(directory) == Config.BackupContext:
+                self.contextPosition = index
+
+        # back to backup main menu
+        self.menu = 0
+
     def InputUpdate(self, k1, k2, k3, ku, kd, kl, kr, kp):
 
         if self.op1Present:
@@ -89,7 +156,7 @@ class Backups():
                     self.currentIndex += 1
 
                 elif kl:
-                    self.contextPosition -= 1;
+                    self.contextPosition -= 1
 
                     if (len(self.currentDirectories) > 0): 
                         if (self.contextPosition < 0):
@@ -100,7 +167,7 @@ class Backups():
                         Config.BackupContext = 'default'
 
                 elif kr:
-                    self.contextPosition += 1;
+                    self.contextPosition += 1
                     
                     if (len(self.currentDirectories) > 0): 
                         if (self.contextPosition >= len(self.currentDirectories)):
@@ -122,7 +189,7 @@ class Backups():
                         self.menu = 1
                     elif (self.currentIndex == 1):
                         # backup all
-                        self.backupSelection = 0;
+                        self.backupSelection = 0
                         self.menu = 2
                     elif (self.currentIndex == 2):
                         # backup synths
@@ -152,56 +219,21 @@ class Backups():
             elif self.menu == 1:
                 # create new context entry
                 if ku:
-                    phraseList = list(Config.BackupContext)
-                    char = phraseList[self.cursorPosition]
-                    charIndex = Config.ValidFilenameCharacters.index(char)
-                    charIndex += 1;
-
-                    if charIndex >= len(Config.ValidFilenameCharacters):
-                        charIndex = 0
-
-                    phraseList[self.cursorPosition] = Config.ValidFilenameCharacters[charIndex]
-                    Config.BackupContext = "".join(phraseList)
+                    self.phraseInput.ChangePhraseCharacter(1)
+                    Config.BackupContext = self.phraseInput.phrase
 
                 elif kd:
-                    phraseList = list(Config.BackupContext)
-                    char = phraseList[self.cursorPosition]
-                    charIndex = Config.ValidFilenameCharacters.index(char)
-                    charIndex -= 1;
-
-                    if charIndex < 0:
-                        charIndex = len(Config.ValidFilenameCharacters) - 1
-                    
-                    phraseList[self.cursorPosition] = Config.ValidFilenameCharacters[charIndex]
-                    Config.BackupContext = "".join(phraseList)
+                    self.phraseInput.ChangePhraseCharacter(-1)
+                    Config.BackupContext = self.phraseInput.phrase
 
                 elif kl:
-                    self.cursorPosition -= 1
+                    self.phraseInput.ChangePhraseCursorPosition(-1)
 
                 elif kr:
-                    self.cursorPosition += 1
+                    self.phraseInput.ChangePhraseCursorPosition(1)
 
-                # cursor wrapping
-                if (self.cursorPosition < 0):
-                    self.cursorPosition = Config.MaxFilenameLength
-
-                elif (self.cursorPosition > Config.MaxFilenameLength):
-                    self.cursorPosition = 0
-                    
                 if k1:
-                    # create new backup directory
-                    self.core.ForceDirectory(Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext)
-                    
-                    # reload backup directories
-                    self.loadDirectoryData(Config.MediaDirectory + "/" + Config.BackupDirectory + "/");
-                    
-                    # select new backup directory
-                    for index, directory in enumerate(self.currentDirectories):
-                        if self.core.getNormPath(directory) == Config.BackupContext:
-                            self.contextPosition = index
-
-                    # back to backup main menu
-                    self.menu = 0
+                    self.CreateNewDirectory()
 
                 if k2:
                     pass
@@ -212,57 +244,10 @@ class Backups():
 
             elif self.menu == 2:
                 if k1:
-                    # copy all local
-                    self.video.FillScreen(Colors.Black)
-                    self.video.DrawLargeText(
-                        Config.PrimaryTextColor, 
-                        (30, 50), 
-                        "Copying!")
-
-                    self.video.Update()
-
-                    if self.local:
-                        sourceDirectory = Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext + "/"
-                        destinationDirectory = Config.OP1USBMountDir + "/"
-                    else:
-                        sourceDirectory = Config.OP1USBMountDir + "/"
-                        destinationDirectory = Config.MediaDirectory + "/" + Config.BackupDirectory + "/" + Config.BackupContext + "/"
-
-                    if (self.backupSelection == 0):
-                        self.core.DeleteFolder(destinationDirectory + "synth")
-                        self.core.DeleteFolder(destinationDirectory + "drum")
-
-                    elif (self.backupSelection == 1):
-                        self.core.DeleteFolder(destinationDirectory + "synth")
-                        sourceDirectory += "/synth/"
-                        destinationDirectory += "/synth/"
-                    
-                    elif (self.backupSelection == 2):
-                        self.core.DeleteFolder(destinationDirectory + "drum")
-                        sourceDirectory += "/drum/"
-                        destinationDirectory += "/drum/"
-
-                    elif (self.backupSelection == 3):
-                        sourceDirectory += "/tape/"
-                        destinationDirectory += "/tape/"
-
-                    elif (self.backupSelection == 4):
-                        sourceDirectory += "/album/"
-                        destinationDirectory += "/album/"
-                        
-                    # copy
-                    print("All:: Copying data from")
-                    print(sourceDirectory)
-                    print("to")
-                    print(destinationDirectory)
-                    self.core.CopyFolder(sourceDirectory, destinationDirectory)
-                    self.menu = 0
+                    self.CopyFiles()
 
                 if k2:
-                    if self.local == True:
-                        self.local = False
-                    else:
-                        self.local = True
+                    self.SwitchContext()
 
                 if k3:
                     # cancel action
@@ -321,21 +306,10 @@ class Backups():
                     (10, 10), 
                     "Create new Folder")
 
-                phraseList = list(Config.BackupContext)
-                newPhraseList = []
-                
-                for index, char in enumerate(phraseList):
-                    if (index == self.cursorPosition):
-                        newPhraseList.append("[")
-                        newPhraseList.append(phraseList[index])
-                        newPhraseList.append("]")
-                    else:
-                        newPhraseList.append(phraseList[index])
-
                 self.video.DrawLargeText(
                     Config.PrimaryTextColor, 
                     (10, 100), 
-                    "".join(newPhraseList))
+                    self.phraseInput.GetPhrase())
 
             elif self.menu == 2:
                 # backup all menu

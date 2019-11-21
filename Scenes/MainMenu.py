@@ -27,68 +27,72 @@ class MainMenu():
         if (self.g > 255):
             self.g = 0
 
-    def InputUpdate(self, k1, k2, k3, ku, kd, kl, kr, kp):
-        if (ku):
-            self.currentIndex = self.currentIndex - 1
-        elif (kd):
-            self.currentIndex = self.currentIndex + 1
+    def SelectMenuEntry(self):
+        if (self.currentIndex == 0):
+            from Scenes.Samples import *
+            self.core.ChangeScene(Samples)
+        elif (self.currentIndex == 1):
+            from Scenes.Backups import *
+            self.core.ChangeScene(Backups)
+        elif (self.currentIndex == 2):
+            from Scenes.ManageFiles import *
+            self.core.ChangeScene(ManageFiles)
+        elif (self.currentIndex == 3):
+            self.core.Shutdown()
+        elif (self.currentIndex == 4):
+            pass
+        elif (self.currentIndex == 5):
+            pass
+        elif (self.currentIndex == 6):
+            pass
+
+    def ChangeMenuIndex(self, delta):
+        self.currentIndex += delta
 
         if (self.currentIndex < 0):
             self.currentIndex = 6
         elif (self.currentIndex > 6):
             self.currentIndex = 0
 
+    def InputUpdate(self, k1, k2, k3, ku, kd, kl, kr, kp):
+        if (ku):
+            self.ChangeMenuIndex(-1)
+        elif (kd):
+            self.ChangeMenuIndex(1)
         if (k1):
-            if (self.currentIndex == 0):
-                from Scenes.Samples import *
-                self.core.ChangeScene(Samples)
-            elif (self.currentIndex == 1):
-                from Scenes.Backups import *
-                self.core.ChangeScene(Backups)
-            elif (self.currentIndex == 2):
-                from Scenes.Synths import *
-                self.core.ChangeScene(Synths)
-            elif (self.currentIndex == 3):
-                from Scenes.Drums import *
-                self.core.ChangeScene(Drums)
-            elif (self.currentIndex == 4):
-                self.core.Shutdown()
-            elif (self.currentIndex == 5):
-                pass
-            elif (self.currentIndex == 6):
-                pass
+            self.SelectMenuEntry()
 
     def Draw(self):
         indexColor = (100, self.g, 100)
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 0 else Config.PrimaryTextColor, 
-            (35, 2), 
-            'Samples')
+            (2, 2), 
+            'Browse Sounds')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 1 else Config.PrimaryTextColor, 
-            (35, 20), 
+            (30, 20), 
             'Backups')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 2 else Config.PrimaryTextColor, 
-            (31, 38), 
-            'Mng Synths')
+            (12, 38), 
+            'Manage Files')
 
         self.video.DrawLargeText(
             indexColor if self.currentIndex == 3 else Config.PrimaryTextColor, 
-            (30, 56), 
-            'Mng Drums')
-
-        self.video.DrawLargeText(
-            indexColor if self.currentIndex == 4 else Config.PrimaryTextColor, 
-            (26, 74), 
+            (22, 56), 
             'Shutdown')
 
         self.video.DrawLargeText(
+            indexColor if self.currentIndex == 4 else Config.PrimaryTextColor, 
+            (12, 74), 
+            '')
+
+        self.video.DrawLargeText(
             indexColor if self.currentIndex == 5 else Config.PrimaryTextColor, 
-            (50, 92), 
+            (22, 92), 
             '')
 
         self.video.DrawLargeText(

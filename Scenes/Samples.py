@@ -57,61 +57,52 @@ class Samples():
         if (self.g > 255):
             self.g = 0
 
-    def InputUpdate(self, k1, k2, k3, ku, kd, kl, kr, kp):
-        if ku:
-            self.currentIndex -= 1
-        elif kd:
-            self.currentIndex += 1
-        elif kl:
-            self.volume = self.audio.LowerVolume(0.1)
-        elif kr:
-            self.volume = self.audio.RaiseVolume(0.1)
+    def ChangeMenuIndex(self, delta):
+        self.currentIndex += delta
 
         # cursor wrapping
         if (self.currentIndex < 0):
             self.currentIndex = (len(self.currentDirectories) + len(self.currentFiles)) - 1
+
         elif (self.currentIndex > (len(self.currentDirectories) + len(self.currentFiles))):
             self.currentIndex = 0
 
-        if k1:
-            objectType = self.getObjectType(self.currentIndex)
-            currentObject = self.getObject(self.currentIndex)
-            
-            if objectType == "Directory":
-                self.lastDirectories.append(currentObject)
-                self.loadDirectoryData(currentObject);
+    def SelectItem(self):
+        objectType = self.getObjectType(self.currentIndex)
+        currentObject = self.getObject(self.currentIndex)
+        
+        if objectType == "Directory":
+            self.lastDirectories.append(currentObject)
+            self.loadDirectoryData(currentObject);
 
-            elif objectType == "File":
-                self.audio.StopAllSounds()
-                self.audio.PlaySound(currentObject)
+        elif objectType == "File":
+            self.audio.StopAllSounds()
+            self.audio.PlaySound(currentObject)
 
-        if k2:
-            quit = False
-            for file in self.currentFiles:
-                if quit:
-                    break;
+    def GoBack(self):
+        if len(self.lastDirectories) == 1:
+            from Scenes.MainMenu import *
+            self.core.ChangeScene(MainMenu)
+        else:
+            self.lastDirectories.pop()
+            self.loadDirectoryData(self.lastDirectories[-1])
 
-                self.audio.StopAllSounds()
-                self.audio.PlaySound(file)
+    def PlayAll(self):
+        quit = False
+        for file in self.currentFiles:
+            if quit:
+                break
 
-                while self.audio.GetBusy():
-                    if self.input.KeyDown(Config.Key1Pin) or self.input.KeyDown(Config.Key2Pin) or self.input.KeyDown(Config.Key3Pin):
-                        self.audio.StopAllSounds()
-                        quit = True
+            self.audio.StopAllSounds()
+            self.audio.PlaySound(file)
 
-        if k3:
-            if len(self.lastDirectories) == 1:
-                from Scenes.MainMenu import *
-                self.core.ChangeScene(MainMenu)
-            else:
-                self.lastDirectories.pop()
-                self.loadDirectoryData(self.lastDirectories[-1])
+            while self.audio.GetBusy():
+                if self.input.KeyDown(Config.Key1Pin) or self.input.KeyDown(Config.Key2Pin) or self.input.KeyDown(Config.Key3Pin):
+                    self.audio.StopAllSounds()
+                    quit = True
 
-    def Draw(self):
-        indexColor = (100, self.g, 100)
+    def DrawEntries(self, indexColor):
         line = 0
-
-        # draw entries
         for index in range(self.currentIndex, self.currentIndex + 10):
             currentObject = self.getObject(index)
             objectType = self.getObjectType(index)
@@ -126,7 +117,7 @@ class Samples():
 
             line += 1
 
-        # draw volume
+    def DrawVolume(self):
         volumeBar = ""
 
         for i in range(0, int(self.volume * 10)):
@@ -136,3 +127,30 @@ class Samples():
             Config.PrimaryTextColor, 
             (10, 115), 
             str(len(self.currentDirectories)) + "," + str(len(self.currentFiles)) + " : " + volumeBar)
+
+    def InputUpdate(self, k1, k2, k3, ku, kd, kl, kr, kp):
+        if ku:
+            self.ChangeMenuIndex(-1)
+
+        elif kd:
+            self.ChangeMenuIndex(1)
+
+        elif kl:
+            self.volume = self.audio.LowerVolume(0.1)
+            
+        elif kr:
+            self.volume = self.audio.RaiseVolume(0.1)
+
+        if k1:
+            self.SelectItem()
+
+        if k2:
+            self.PlayAll()
+
+        if k3:
+            self.GoBack()
+            
+    def Draw(self):
+        indexColor = (100, self.g, 100)
+        self.DrawEntries(indexColor)
+        self.DrawVolume()

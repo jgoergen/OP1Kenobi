@@ -1,5 +1,5 @@
 # OP1Kenobi
-A full featured Companion for the Teenage Engineering OP1 Keyboard.
+A full featured Companion for the Teenage Engineering OP1 Keyboard written in Python 2.7
 
 While I adore my OP1, there are some things I would love to augment a bit to improve the workflow, plus more features = more better. 
 
@@ -85,3 +85,7 @@ A case that attaches to the OP1 ( plugging directly into the ports on the right 
 
 ## Hardware setup information ##
 Coming soon
+
+## Required Python Libraries
+pyusb - ( pip install pyusb )
+RPi.GPIO - ( pip install RPi.GPIO )

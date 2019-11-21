@@ -18,16 +18,16 @@ from Scenes.MainMenu import *
 
 # initialize
 print 'Main:: Starting Init'
-core = Core();
+core = Core()
 
 video = Video(
     Config.DisplayWidth,
     Config.DisplayHeight,
     Config.FontFile,
     Config.LargeFontSize,
-    Config.SmallFontSize);
+    Config.SmallFontSize)
 
-audio = Audio(core);
+audio = Audio(core)
 
 input = Input(
     Config.Key1Pin,
@@ -37,7 +37,7 @@ input = Input(
     Config.KeyDownPin,
     Config.KeyLeftPin,
     Config.KeyRightPin,
-    Config.KeyPressPin);
+    Config.KeyPressPin)
 
 def Main():
     print 'Main:: Starting Main'
