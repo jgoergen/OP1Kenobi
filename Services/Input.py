@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 
-class RPIInput():
+class Input():
+
     def __init__(self, key1Pin, key2Pin, key3Pin, keyUpPin, keyDownPin, keyLeftPin, keyRightPin, keyPressPin):
         print 'Input:: Starting Init'
         GPIO.setmode(GPIO.BCM)

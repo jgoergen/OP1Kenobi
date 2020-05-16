@@ -7,7 +7,7 @@ from os import walk
 from subprocess import Popen, PIPE, STDOUT
 import shutil as sh
 
-class PCCore():
+class Core():
 
     currentScene = None
     audio = None
