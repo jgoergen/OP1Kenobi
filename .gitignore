@@ -1,13 +1,13 @@
 # keep media directories but not what's inside them
 Media/backups/*
 !Media/backups/.gitkeep
-Media/drums/*
-!Media/drums/.gitkeep
+Media/drum/*
+!Media/drum/.gitkeep
 Media/samples/*
 Media/samples/.gitkeep
 Media/soundpacks/*
 Media/soundpacks/.gitkeep
-Media/synths/*
-Media/synths/.gitkeep
+Media/synth/*
+Media/synth/.gitkeep
 
 *.pyc
