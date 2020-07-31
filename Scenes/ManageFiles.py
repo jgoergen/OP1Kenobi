@@ -9,13 +9,18 @@ from Services.Core import *
 from Services.Input import *
 from Services.PhraseInput import *
 
+# scenes
+from Scenes.MainMenu import *
+from Scenes.MainMenu import *
+
+
 class ManageFiles():
     def loadDirectoryData(self, path):
         files, directories = self.core.GetDataInDirectory(path)
         self.currentDirectories = directories
         self.currentFiles = []
         self.currentIndex = 0
-    
+
         for file in files:
             if ".aif" in file.lower():
                 self.currentFiles.append(file)
@@ -37,7 +42,7 @@ class ManageFiles():
             return None
 
     def __init__(self, core, audio, video, input):
-        print 'ManageFiles:: Starting Init'
+        print('ManageFiles:: Starting Init')
         self.core = core
         self.audio = audio
         self.video = video
@@ -50,14 +55,15 @@ class ManageFiles():
         self.volume = self.audio.GetVolume()
         self.phraseInput = PhraseInput()
 
-        self.op1Present = self.core.IsUSBDeviceConnected(Config.OP1USBVendor, Config.OP1USBProduct)
-        
+        self.op1Present = self.core.IsUSBDeviceConnected(
+            Config.OP1USBVendor, Config.OP1USBProduct)
+
         if self.op1Present:
             # create mount directory if it doesn't exist
             self.core.ForceDirectory(Config.OP1USBMountDir)
             # get usb drive mount path
             self.mountpath = self.core.GetUSBMountPath(Config.OP1USBId)
-            print(" > OP-1 device path: %s" % self.mountpath)
+            print(' > OP-1 device path: %s' % self.mountpath)
             # mount it!
             self.core.MountDevice(self.mountpath, Config.OP1USBMountDir)
             # load contents
@@ -70,13 +76,13 @@ class ManageFiles():
         self.g = self.g + 1
         if (self.g > 255):
             self.g = 0
-            
+
     def CopyFiles(self):
         self.menu = 2
 
         self.video.DrawLargeText(
-            Config.PrimaryTextColor, 
-            (10, 10), 
+            Config.PrimaryTextColor,
+            (10, 10),
             "Copying!")
 
         # ensure the target directory exists
@@ -94,19 +100,21 @@ class ManageFiles():
 
         # copy
         print("ManageFiles:: Copying file " + currentObject)
-        print("ManageFiles:: To " + targetDirectory + path + "/" + self.phraseInput.phrase)
+        print("ManageFiles:: To " + targetDirectory +
+              path + "/" + self.phraseInput.phrase)
         self.core.CopyFile(
             currentObject,
             targetDirectory + path + "/" + self.phraseInput.phrase)
 
         self.menu = 0
-        
+
     def ChangeMenuIndex(self, delta):
         self.currentIndex += delta
 
         # cursor wrapping
         if (self.currentIndex < 0):
-            self.currentIndex = (len(self.currentDirectories) + len(self.currentFiles)) - 1
+            self.currentIndex = (
+                len(self.currentDirectories) + len(self.currentFiles)) - 1
 
         elif (self.currentIndex > (len(self.currentDirectories) + len(self.currentFiles))):
             self.currentIndex = 0
@@ -114,9 +122,8 @@ class ManageFiles():
     def GoBack(self):
         if len(self.lastDirectories) == 1:
             self.core.UnmountDevice(Config.OP1USBMountDir)
-            from Scenes.MainMenu import *
             self.core.ChangeScene(MainMenu)
-            
+
         else:
             self.lastDirectories.pop()
             self.loadDirectoryData(self.lastDirectories[-1])
@@ -126,18 +133,18 @@ class ManageFiles():
         if self.local:
             self.local = False
             self.lastDirectories = [Config.OP1USBMountDir + "/"]
-        
+
         else:
             self.local = True
             self.lastDirectories = [Config.MediaDirectory + "/"]
-        
+
         self.loadDirectoryData(self.lastDirectories[0])
 
     def SelectItem(self):
         objectType = self.getObjectType(self.currentIndex)
         currentObject = self.getObject(self.currentIndex)
         path, file = self.core.SplitFilePathParts(currentObject)
-        
+
         if objectType == "Directory":
             self.lastDirectories.append(currentObject)
             self.loadDirectoryData(currentObject)
@@ -158,11 +165,11 @@ class ManageFiles():
         for index in range(self.currentIndex, self.currentIndex + 10):
             currentObject = self.getObject(index)
             objectType = self.getObjectType(index)
-                
+
             if objectType is not None:
                 self.video.DrawSmallText(
-                    indexColor if self.currentIndex == index else Config.PrimaryTextColor, 
-                    (10, line * 11), 
+                    indexColor if self.currentIndex == index else Config.PrimaryTextColor,
+                    (10, line * 11),
                     currentObject[-18:])
 
             line += 1
@@ -172,10 +179,10 @@ class ManageFiles():
 
         for i in range(0, int(self.volume * 10)):
             volumeBar += "|"
-        
+
         self.video.DrawSmallText(
-            Config.PrimaryTextColor, 
-            (10, 115), 
+            Config.PrimaryTextColor,
+            (10, 115),
             str(len(self.currentDirectories)) + "," + str(len(self.currentFiles)) + " : " + volumeBar)
 
     def InputUpdate(self, k1, k2, k3, ku, kd, kl, kr, kp):
@@ -194,7 +201,7 @@ class ManageFiles():
 
                 elif kr:
                     self.phraseInput.ChangePhraseCursorPosition(1)
-                    
+
                 if k1:
                     self.CopyFiles()
 
@@ -231,7 +238,6 @@ class ManageFiles():
 
         elif self.op1Present == False:
             if k1 or k2 or k3:
-                from Scenes.MainMenu import *
                 self.core.ChangeScene(MainMenu)
 
     def Draw(self):
@@ -247,66 +253,66 @@ class ManageFiles():
 
                 if self.local:
                     self.video.DrawSmallText(
-                        indexColor, 
-                        (10, 10), 
+                        indexColor,
+                        (10, 10),
                         "Copy to OP1")
                 else:
                     self.video.DrawSmallText(
-                        indexColor, 
-                        (10, 10), 
+                        indexColor,
+                        (10, 10),
                         "Copy Local")
 
                 self.video.DrawSmallText(
-                    indexColor, 
-                    (10, 22), 
+                    indexColor,
+                    (10, 22),
                     "Delete")
 
                 self.video.DrawSmallText(
-                    indexColor, 
-                    (10, 34), 
+                    indexColor,
+                    (10, 34),
                     "Cancel")
 
                 self.video.DrawLargeText(
-                    Config.PrimaryTextColor, 
-                    (10, 100), 
+                    Config.PrimaryTextColor,
+                    (10, 100),
                     self.phraseInput.GetPhrase())
 
             elif self.menu == 2:
-    
+
                 self.video.DrawLargeText(
-                    indexColor, 
-                    (10, 10), 
+                    indexColor,
+                    (10, 10),
                     "Copying!")
 
             elif self.menu == 3:
-        
+
                 self.video.DrawLargeText(
-                    indexColor, 
-                    (10, 10), 
+                    indexColor,
+                    (10, 10),
                     "Delete?")
 
         else:
             self.video.DrawLargeText(
-                indexColor, 
-                (10, 10), 
+                indexColor,
+                (10, 10),
                 "OP1 Drive")
 
             self.video.DrawLargeText(
-                indexColor, 
-                (10, 25), 
+                indexColor,
+                (10, 25),
                 "Not Present!")
 
             self.video.DrawSmallText(
-                Config.PrimaryTextColor, 
-                (10, 40), 
+                Config.PrimaryTextColor,
+                (10, 40),
                 "Return to the menu,")
 
             self.video.DrawSmallText(
-                Config.PrimaryTextColor, 
-                (10, 48), 
+                Config.PrimaryTextColor,
+                (10, 48),
                 "plug in the OP1")
 
             self.video.DrawSmallText(
-                Config.PrimaryTextColor, 
-                (10, 56), 
+                Config.PrimaryTextColor,
+                (10, 56),
                 "and try again.")

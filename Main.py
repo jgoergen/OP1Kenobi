@@ -1,6 +1,8 @@
 # system imports
 import sys
-import time,os,datetime
+import time
+import os
+import datetime
 import shutil as sh
 
 # resources
@@ -17,7 +19,7 @@ from Services.Input import *
 from Scenes.MainMenu import *
 
 # initialize
-print 'Main:: Starting Init'
+print('Main:: Starting Init')
 core = Core()
 
 video = Video(
@@ -39,8 +41,9 @@ input = Input(
     Config.KeyRightPin,
     Config.KeyPressPin)
 
+
 def Main():
-    print 'Main:: Starting Main'
+    print('Main:: Starting Main')
     global core
     global video
     global audio
@@ -59,7 +62,7 @@ def Main():
         if (core.GetTime() - lastDisplayUpdateTime > Config.DisplayUpdateSpeed):
             lastDisplayUpdateTime = core.GetTime()
             video.FillScreen(Colors.Black)
-            core.currentScene.Draw()            
+            core.currentScene.Draw()
 
         if (core.GetTime() - lastInputUpdateTime > Config.InputUpdateSpeed):
             lastInputUpdateTime = core.GetTime()
@@ -75,9 +78,10 @@ def Main():
 
         video.Update()
         audio.Update()
-        
+
+
 def Intro():
-    print 'Main:: Starting Intro'
+    print('Main:: Starting Intro')
     global core
     global video
     global audio
@@ -85,13 +89,14 @@ def Intro():
     video.FillScreen(Colors.Black)
 
     video.DrawLargeText(
-        Config.PrimaryTextColor, 
-        (10, 10), 
+        Config.PrimaryTextColor,
+        (10, 10),
         'Intro!')
 
     video.Update()
-        
+
     # TODO: Intro screen
+
 
 if __name__ == '__main__':
     Intro()

@@ -1,1 +1,3 @@
-sudo python Main.py
+#!/bin/bash
+
+# sudo python Main.py
